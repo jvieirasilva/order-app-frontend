@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { api } from "@/app/services/api";
 
-export default function ConfirmRegisterPage() {
+// Componente interno que usa useSearchParams
+function ConfirmRegisterContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
@@ -207,5 +208,20 @@ export default function ConfirmRegisterPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Componente principal que exporta envolvido em Suspense
+export default function ConfirmRegisterPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-vh-100 d-flex align-items-center justify-content-center" style={{ background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" }}>
+        <div className="spinner-border text-light" role="status" style={{ width: "3rem", height: "3rem" }}>
+          <span className="visually-hidden">Carregando...</span>
+        </div>
+      </div>
+    }>
+      <ConfirmRegisterContent />
+    </Suspense>
   );
 }
