@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { api } from "@/app/services/api";
 
-
-
-export default function ResetPasswordPage() {
+// Componente interno que usa useSearchParams
+function ResetPasswordContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
@@ -234,5 +233,23 @@ export default function ResetPasswordPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Componente principal que exporta envolvido em Suspense
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <div 
+        className="min-vh-100 d-flex align-items-center justify-content-center" 
+        style={{ background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" }}
+      >
+        <div className="spinner-border text-light" role="status" style={{ width: "3rem", height: "3rem" }}>
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    }>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }
