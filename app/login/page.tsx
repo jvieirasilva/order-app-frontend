@@ -64,7 +64,7 @@ async function handleSubmit(e: React.FormEvent) {
     // ✅ Verificar se salvou
     const savedToken = localStorage.getItem("accessToken");
     console.log("🔍 Token salvo?", savedToken ? "SIM ✅" : "NÃO ❌");
-    
+    debugger
     if (!savedToken) {
       console.error("❌ Falha ao salvar token no localStorage");
       setError("Failed to save authentication data");

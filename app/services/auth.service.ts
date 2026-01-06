@@ -2,6 +2,7 @@ import { api } from "./api";
 
 export type Role = "ADMIN" | "USER";
 
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -115,6 +116,14 @@ export function isAuthenticated(): boolean {
   return !!localStorage.getItem("accessToken");
 }
 
+// ✅ CHECK IF USER IS ADMIN
+export function isAdmin(): boolean {
+  if (typeof window === "undefined") return false;
+  
+  const user = getCurrentUser();
+  return user?.role === "ADMIN";
+}
+
 // FORGOT PASSWORD
 /**
  * Solicita reset de senha
@@ -125,3 +134,4 @@ export async function forgotPassword(email: string) {
   });
   return response.data;
 }
+
