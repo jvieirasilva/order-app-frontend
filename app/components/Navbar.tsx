@@ -17,7 +17,7 @@ export default function Navbar() {
   }, []);
 
   const isActive = (path: string) => pathname === path;
-
+  
   const navLinks = [
     { href: "/", label: "Home", icon: "bi-house-door" },
     { href: "/users/search", label: "Users", icon: "bi-people" },
@@ -127,7 +127,7 @@ export default function Navbar() {
                   fontWeight: "bold"
                 }}
               >
-                {currentUser?.fullName?.charAt(0).toUpperCase() || "U"}
+                {currentUser?.fullName?.charAt(0).toUpperCase()   || "U"}
               </div>
             )}
             
@@ -144,10 +144,10 @@ export default function Navbar() {
           
           <button 
             className="btn btn-outline-light btn-sm w-100"
-            onClick={handleLogout}
+            onClick={handleLogout} 
           >
             <i className="bi bi-box-arrow-right me-2"></i>
-            Logout
+            Logout 
           </button>
         </div>
       </div>

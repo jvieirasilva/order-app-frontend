@@ -5,6 +5,8 @@ import { registerUser } from "@/app/services/auth.service";
 
 type Role = "ADMIN" | "USER";
 
+const DEFAULT_AVATAR = "/jose.png"; // ou "/default-avatar.png"
+
 export default function RegisterPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -29,6 +31,15 @@ export default function RegisterPage() {
 
   const emailRegex = useMemo(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/, []);
 
+  const DEFAULT_AVATAR = "/jose.png"; // ou "/default-avatar.png"
+
+const resolvedProfileImageUrl =
+  currentUser?.profileImageUrl
+    ? currentUser.profileImageUrl.startsWith("http")
+      ? currentUser.profileImageUrl
+      : `${process.env.NEXT_PUBLIC_API_URL ?? ""}${currentUser.profileImageUrl}`
+    : DEFAULT_AVATAR;
+
   const errors = useMemo(() => {
     const e: Record<string, string> = {};
 
@@ -52,6 +63,8 @@ export default function RegisterPage() {
   }, [fullName, email, role, password, confirmPassword, emailRegex]);
 
   const isValid = Object.keys(errors).length === 0;
+
+  
 
   function markAllTouched() {
     setTouched({
@@ -131,6 +144,7 @@ export default function RegisterPage() {
   );
 
   const canClear = (value: string) => !!value && !loading;
+  
 
   return (
     <div className="container py-5" style={{ maxWidth: 720 }}>
