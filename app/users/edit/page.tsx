@@ -31,15 +31,6 @@ export default function RegisterPage() {
 
   const emailRegex = useMemo(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/, []);
 
-  const DEFAULT_AVATAR = "/jose.png"; // ou "/default-avatar.png"
-
-const resolvedProfileImageUrl =
-  currentUser?.profileImageUrl
-    ? currentUser.profileImageUrl.startsWith("http")
-      ? currentUser.profileImageUrl
-      : `${process.env.NEXT_PUBLIC_API_URL ?? ""}${currentUser.profileImageUrl}`
-    : DEFAULT_AVATAR;
-
   const errors = useMemo(() => {
     const e: Record<string, string> = {};
 

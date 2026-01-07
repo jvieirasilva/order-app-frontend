@@ -70,18 +70,14 @@ export async function registerUser(payload: RegisterPayload) {
     formData.append("profileImage", payload.profileImage);
   }
   
-  const response = await api.post("/api/auth/register", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  const response = await api.post("/api/auth/register", formData);
   
   console.log("Register response:", response.data);
   return response.data;
 }
 
 
-// ✅ CORRIGIDO - LOGOUT
+// ✅ CORRIGIDO - LOGOUT 
 export function logout() {
   if (typeof window === "undefined") return; // ✅ Verificar se está no navegador
   localStorage.removeItem("accessToken");
