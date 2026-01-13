@@ -2,22 +2,17 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { searchProducts, Product, deleteProduct } from "@/app/services/product.service";
+import { searchProducts, Product } from "@/app/services/product.service";
 import { isAuthenticated } from "@/app/services/auth.service";
 import { useDebounce } from "@/app/hooks/useDebounce";
-import ProductCard from "@/app/components/ProductCard";
-import ProductDetails from "@/app/components/ProductDetails";
+import OrderProductCard from "@/app/components/order/OrderProductCard";
+import OrderProductDetails from "@/app/components/order/OrderProductDetails";
 import Navbar from "@/app/components/Navbar";
-import CreateProductModal from "@/app/components/CreateProductModal";
-import EditProductModal from "@/app/components/EditProductModal";
 
-export default function ProductsPage() {
+export default function OrderPage() {
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [productToEdit, setProductToEdit] = useState<Product | null>(null);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,33 +25,10 @@ export default function ProductsPage() {
   const [totalElements, setTotalElements] = useState(0);
   const [pageSize] = useState(12); // 3 linhas x 4 colunas
 
-  // Verificar autenticação
+  // Verificar autenticação (não verifica ROLE - todos podem acessar)
   useEffect(() => {
     if (!isAuthenticated()) {
       router.push("/login");
-    }
-  }, [router]);
-
-  // ✅ PROTEÇÃO: REDIRECIONAR SE NÃO FOR ADMIN
-  useEffect(() => {
-    const userStr = localStorage.getItem("user");
-    if (userStr) {
-      try {
-        const user = JSON.parse(userStr);
-        if (user.role !== "ADMIN") {
-          console.log("⚠️ Acesso negado: usuário não é ADMIN");
-          router.push("/");
-          return;
-        }
-      } catch (error) {
-        console.error("Erro ao verificar role:", error);
-        router.push("/");
-        return;
-      }
-    } else {
-      console.log("⚠️ Usuário não encontrado no localStorage");
-      router.push("/");
-      return;
     }
   }, [router]);
 
@@ -115,35 +87,6 @@ export default function ProductsPage() {
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
     window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const handleCreateSuccess = () => {
-    // Recarregar lista de produtos
-    fetchProducts();
-  };
-
-  const handleEditSuccess = () => {
-    // Recarregar lista de produtos
-    fetchProducts();
-  };
-
-  const handleEdit = (product: Product) => {
-    setProductToEdit(product);
-    setIsEditModalOpen(true);
-  };
-
-  const handleDelete = async (product: Product) => {
-    if (!confirm(`Tem certeza que deseja deletar "${product.name}"?`)) {
-      return;
-    }
-
-    try {
-      await deleteProduct(product.id);
-      fetchProducts(); // Recarregar lista
-    } catch (error) {
-      console.error("Erro ao deletar produto:", error);
-      alert("Erro ao deletar produto");
-    }
   };
 
   // Pagination component
@@ -235,19 +178,13 @@ export default function ProductsPage() {
 
       <div className="min-vh-100 bg-light">
         <div className="container pb-5 pt-4">
-          {/* Header com Botão de Adicionar */}
-          <div className="d-flex justify-content-between align-items-center mb-4">
+          {/* Header SEM Botão de Adicionar */}
+          <div className="mb-4">
             <h2 className="mb-0">
-              <i className="bi bi-box-seam me-2"></i>
-              Produtos
+              <i className="bi bi-cart-fill me-2 text-warning"></i>
+              Fazer Pedido
             </h2>
-            <button
-              className="btn btn-primary btn-lg"
-              onClick={() => setIsCreateModalOpen(true)}
-            >
-              <i className="bi bi-plus-circle me-2"></i>
-              Adicionar Produto
-            </button>
+            <p className="text-muted mb-0">Selecione os produtos para seu pedido</p>
           </div>
 
           {/* Busca */}
@@ -313,11 +250,9 @@ export default function ProductsPage() {
               <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
                 {products.map((product) => (
                   <div key={product.id} className="col">
-                    <ProductCard 
+                    <OrderProductCard 
                       product={product} 
                       onClick={handleProductClick}
-                      onEdit={handleEdit}
-                      onDelete={handleDelete}
                     />
                   </div>
                 ))}
@@ -344,22 +279,7 @@ export default function ProductsPage() {
       </div>
 
       {/* Modal de Detalhes */}
-      <ProductDetails product={selectedProduct} onClose={handleCloseDetails} />
-
-      {/* Modal de Criar Produto */}
-      <CreateProductModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSuccess={handleCreateSuccess}
-      />
-
-      {/* Modal de Editar Produto */}
-      <EditProductModal
-        product={productToEdit}
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        onSuccess={handleEditSuccess}
-      />
+      <OrderProductDetails product={selectedProduct} onClose={handleCloseDetails} />
     </>
   );
 }

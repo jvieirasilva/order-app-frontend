@@ -82,6 +82,29 @@ export default function SearchUsersPage() {
     setUserIsAdmin(isAdmin());
   }, []);
 
+  // ✅ PROTEÇÃO: REDIRECIONAR SE NÃO FOR ADMIN
+  useEffect(() => {
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        if (user.role !== "ADMIN") {
+          console.log("⚠️ Acesso negado: usuário não é ADMIN");
+          router.push("/");
+          return;
+        }
+      } catch (error) {
+        console.error("Erro ao verificar role:", error);
+        router.push("/");
+        return;
+      }
+    } else {
+      console.log("⚠️ Usuário não encontrado no localStorage");
+      router.push("/");
+      return;
+    }
+  }, [router]);
+
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearchTerm(searchTerm), 500);
     return () => clearTimeout(timer);

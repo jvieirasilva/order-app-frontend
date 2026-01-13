@@ -69,7 +69,7 @@ export async function registerUser(payload: RegisterPayload) {
   if (payload.profileImage) {
     formData.append("profileImage", payload.profileImage);
   }
-  
+  debugger
   const response = await api.post("/api/auth/register", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -77,6 +77,7 @@ export async function registerUser(payload: RegisterPayload) {
   });
   
   console.log("Register response:", response.data);
+  debugger
   return response.data;
 }
 
