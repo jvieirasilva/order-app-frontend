@@ -8,7 +8,6 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isNavbarOpen, setIsNavbarOpen] = useState(false);
   
   const [currentUser, setCurrentUser] = useState<any>(null);
 
@@ -127,7 +126,7 @@ export default function Navbar() {
                   fontWeight: "bold"
                 }}
               >
-                {currentUser?.fullName?.charAt(0).toUpperCase()   || "U"}
+                {currentUser?.fullName?.charAt(0).toUpperCase() || "U"}
               </div>
             )}
             
@@ -155,6 +154,7 @@ export default function Navbar() {
       {/* NAVBAR */}
       <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
         <div className="container-fluid">
+          {/* ✅ BOTÃO SIDEBAR (ESQUERDA) */}
           <button
             className="btn me-2 text-white"
             type="button"
@@ -171,32 +171,22 @@ export default function Navbar() {
             <i className="bi bi-list" style={{ fontSize: "1.8rem" }}></i>
           </button>
 
+          {/* ✅ LOGO */}
           <Link href="/" className="navbar-brand">
             <i className="bi bi-shop me-2"></i>
             Order App
           </Link>
 
-          <button
-            className="navbar-toggler"
-            type="button"
-            onClick={() => setIsNavbarOpen(!isNavbarOpen)}
-            aria-controls="navbarNav"
-            aria-expanded={isNavbarOpen}
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
+          {/* ✅ REMOVIDO navbar-toggler - Evita menu duplicado no mobile */}
+          {/* O sidebar já funciona como menu mobile */}
 
-          <div
-            className={`collapse navbar-collapse ${isNavbarOpen ? "show" : ""}`}
-            id="navbarNav"
-          >
+          {/* ✅ NAVBAR LINKS - Só aparecem em desktop (d-none d-lg-flex) */}
+          <div className="collapse navbar-collapse d-none d-lg-flex" id="navbarNav">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
                 <Link
                   href="/"
                   className={`nav-link ${isActive("/") ? "active" : ""}`}
-                  onClick={() => setIsNavbarOpen(false)}
                 >
                   Home
                 </Link>
@@ -205,7 +195,6 @@ export default function Navbar() {
                 <Link
                   href="/users/search"
                   className={`nav-link ${isActive("/users/search") ? "active" : ""}`}
-                  onClick={() => setIsNavbarOpen(false)}
                 >
                   Users
                 </Link>
@@ -214,7 +203,6 @@ export default function Navbar() {
                 <Link
                   href="/products"
                   className={`nav-link ${isActive("/products") ? "active" : ""}`}
-                  onClick={() => setIsNavbarOpen(false)}
                 >
                   Products
                 </Link>
@@ -223,13 +211,13 @@ export default function Navbar() {
                 <Link
                   href="/orders"
                   className={`nav-link ${isActive("/orders") ? "active" : ""}`}
-                  onClick={() => setIsNavbarOpen(false)}
                 >
                   Orders
                 </Link>
               </li>
             </ul>
 
+            {/* ✅ USER INFO E LOGOUT - Só em desktop */}
             <div className="d-flex align-items-center">
               <span className="text-white me-3">
                 <i className="bi bi-person-circle me-1"></i>
