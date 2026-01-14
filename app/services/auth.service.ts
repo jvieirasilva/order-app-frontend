@@ -2,7 +2,6 @@ import { api } from "./api";
 
 export type Role = "ADMIN" | "USER";
 
-
 export interface LoginRequest {
   email: string;
   password: string;
@@ -47,11 +46,25 @@ export type RegisterPayload = {
 };
 
 export async function login(credentials: LoginRequest): Promise<AuthResponse> {
+  // ✅ LIMPAR localStorage ANTES de fazer login
+  if (typeof window !== "undefined") {
+    localStorage.clear();
+  }
+  
   const response = await api.post("/api/auth/authenticate", credentials);
+  
+  // ✅ Salvar novos dados
+  if (typeof window !== "undefined") {
+    localStorage.setItem("accessToken", response.data.accessToken);
+    localStorage.setItem("refreshToken", response.data.refreshToken);
+    localStorage.setItem("user", JSON.stringify(response.data.user));
+    
+    console.log("✅ Login realizado:", response.data.user);
+    console.log("✅ Role salvo:", response.data.user.role);
+  }
+  
   return response.data;
 }
-
-
 
 export async function registerUser(payload: RegisterPayload) {
   console.log("Register payload:", payload);
@@ -69,7 +82,7 @@ export async function registerUser(payload: RegisterPayload) {
   if (payload.profileImage) {
     formData.append("profileImage", payload.profileImage);
   }
-  debugger
+  
   const response = await api.post("/api/auth/register", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -77,17 +90,20 @@ export async function registerUser(payload: RegisterPayload) {
   });
   
   console.log("Register response:", response.data);
-  debugger
+  
   return response.data;
 }
 
-
 // ✅ CORRIGIDO - LOGOUT
 export function logout() {
-  if (typeof window === "undefined") return; // ✅ Verificar se está no navegador
-  localStorage.removeItem("accessToken");
-  localStorage.removeItem("refreshToken");
-  localStorage.removeItem("user");
+  if (typeof window === "undefined") return;
+  
+  console.log("🚪 Fazendo logout...");
+  
+  // ✅ LIMPAR TUDO do localStorage
+  localStorage.clear();
+  
+  console.log("✅ localStorage limpo!");
 }
 
 // ✅ CORRIGIDO - GET CURRENT USER
@@ -98,11 +114,15 @@ export function getCurrentUser() {
   
   // ✅ Validar se é uma string válida antes de parsear
   if (!userStr || userStr === "undefined" || userStr === "null") {
+    console.log("⚠️ Nenhum usuário no localStorage");
     return null;
   }
   
   try {
-    return JSON.parse(userStr);
+    const user = JSON.parse(userStr);
+    console.log("👤 Usuário atual:", user);
+    console.log("🔑 Role atual:", user.role);
+    return user;
   } catch (error) {
     console.error("❌ Error parsing user data:", error);
     // Limpar dados corrompidos
@@ -113,7 +133,7 @@ export function getCurrentUser() {
 
 // ✅ CORRIGIDO - CHECK IF AUTHENTICATED
 export function isAuthenticated(): boolean {
-  if (typeof window === "undefined") return false; // ✅ Verificar se está no navegador
+  if (typeof window === "undefined") return false;
   return !!localStorage.getItem("accessToken");
 }
 
@@ -122,17 +142,17 @@ export function isAdmin(): boolean {
   if (typeof window === "undefined") return false;
   
   const user = getCurrentUser();
-  return user?.role === "ADMIN";
+  const admin = user?.role === "ADMIN";
+  
+  console.log("🔐 isAdmin check:", admin, "- Role:", user?.role);
+  
+  return admin;
 }
 
 // FORGOT PASSWORD
-/**
- * Solicita reset de senha
- */
 export async function forgotPassword(email: string) {
   const response = await api.post("/api/auth/forgot-password", null, {
     params: { email }
   });
   return response.data;
 }
-

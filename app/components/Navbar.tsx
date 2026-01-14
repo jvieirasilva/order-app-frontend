@@ -17,15 +17,27 @@ export default function Navbar() {
 
   const isActive = (path: string) => pathname === path;
   
+  // ✅ Verificar se usuário é ADMIN
+  const isAdmin = currentUser?.role === "ADMIN";
+  
+  // ✅ Links do menu (com controle de acesso)
   const navLinks = [
-    { href: "/", label: "Home", icon: "bi-house-door" },
-    { href: "/users/search", label: "Users", icon: "bi-people" },
-    { href: "/users/register", label: "Register User", icon: "bi-person-plus" },
-    { href: "/products", label: "Products", icon: "bi-box-seam" },
-    { href: "/orders", label: "Orders", icon: "bi-cart" },
-    { href: "/reports", label: "Reports", icon: "bi-file-earmark-text" },
-    { href: "/settings", label: "Settings", icon: "bi-gear" },
+    { href: "/", label: "Home", icon: "bi-house-door", adminOnly: false },
+    { href: "/users/search", label: "Users", icon: "bi-people", adminOnly: true },  // 🔒 ADMIN
+    { href: "/users/register", label: "Register User", icon: "bi-person-plus", adminOnly: true },  // 🔒 ADMIN
+    { href: "/products", label: "Products", icon: "bi-box-seam", adminOnly: true },  // 🔒 ADMIN
+    { href: "/orders", label: "Orders", icon: "bi-cart", adminOnly: false },
+    { href: "/reports", label: "Reports", icon: "bi-file-earmark-text", adminOnly: false },
+    { href: "/settings", label: "Settings", icon: "bi-gear", adminOnly: false },
   ];
+
+  // ✅ Filtrar links baseado no role do usuário
+  const filteredNavLinks = navLinks.filter(link => {
+    if (link.adminOnly) {
+      return isAdmin;  // Só mostra se for ADMIN
+    }
+    return true;  // Mostra para todos
+  });
 
   function handleLogout() {
     logout();
@@ -78,9 +90,9 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Sidebar Links */}
+        {/* ✅ Sidebar Links (FILTRADOS POR ROLE) */}
         <ul className="nav flex-column p-3">
-          {navLinks.map((link) => (
+          {filteredNavLinks.map((link) => (
             <li key={link.href} className="nav-item mb-2">
               <Link
                 href={link.href}
@@ -91,6 +103,11 @@ export default function Navbar() {
               >
                 <i className={`${link.icon} me-3`} style={{ fontSize: "1.2rem" }}></i>
                 {link.label}
+                {link.adminOnly && (
+                  <span className="badge bg-danger ms-auto" style={{ fontSize: "0.65rem" }}>
+                    ADMIN
+                  </span>
+                )}
               </Link>
             </li>
           ))}
@@ -138,6 +155,12 @@ export default function Navbar() {
               <small className="text-white text-opacity-75" style={{ fontSize: "11px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "block" }}>
                 {currentUser?.email || "admin@example.com"}
               </small>
+              {/* ✅ BADGE DO ROLE */}
+              {isAdmin && (
+                <span className="badge bg-danger mt-1" style={{ fontSize: "0.65rem" }}>
+                  ADMIN
+                </span>
+              )}
             </div>
           </div>
           
@@ -177,10 +200,7 @@ export default function Navbar() {
             Order App
           </Link>
 
-          {/* ✅ REMOVIDO navbar-toggler - Evita menu duplicado no mobile */}
-          {/* O sidebar já funciona como menu mobile */}
-
-          {/* ✅ NAVBAR LINKS - Só aparecem em desktop (d-none d-lg-flex) */}
+          {/* ✅ NAVBAR LINKS - Só desktop + FILTRADOS POR ROLE */}
           <div className="collapse navbar-collapse d-none d-lg-flex" id="navbarNav">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
@@ -191,22 +211,32 @@ export default function Navbar() {
                   Home
                 </Link>
               </li>
-              <li className="nav-item">
-                <Link
-                  href="/users/search"
-                  className={`nav-link ${isActive("/users/search") ? "active" : ""}`}
-                >
-                  Users
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  href="/products"
-                  className={`nav-link ${isActive("/products") ? "active" : ""}`}
-                >
-                  Products
-                </Link>
-              </li>
+              
+              {/* ✅ USERS - SÓ ADMIN */}
+              {isAdmin && (
+                <li className="nav-item">
+                  <Link
+                    href="/users/search"
+                    className={`nav-link ${isActive("/users/search") ? "active" : ""}`}
+                  >
+                    Users
+                  </Link>
+                </li>
+              )}
+              
+              {/* ✅ PRODUCTS - SÓ ADMIN */}
+              {isAdmin && (
+                <li className="nav-item">
+                  <Link
+                    href="/products"
+                    className={`nav-link ${isActive("/products") ? "active" : ""}`}
+                  >
+                    Products
+                  </Link>
+                </li>
+              )}
+              
+              {/* ✅ ORDERS - TODOS */}
               <li className="nav-item">
                 <Link
                   href="/orders"
@@ -217,11 +247,16 @@ export default function Navbar() {
               </li>
             </ul>
 
-            {/* ✅ USER INFO E LOGOUT - Só em desktop */}
+            {/* ✅ USER INFO E LOGOUT - Desktop */}
             <div className="d-flex align-items-center">
               <span className="text-white me-3">
                 <i className="bi bi-person-circle me-1"></i>
                 {currentUser?.fullName || "Admin"}
+                {isAdmin && (
+                  <span className="badge bg-danger ms-2" style={{ fontSize: "0.65rem" }}>
+                    ADMIN
+                  </span>
+                )}
               </span>
               <button 
                 className="btn btn-outline-light btn-sm"
