@@ -2,42 +2,36 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { logout, getCurrentUser } from "@/app/services/auth.service";
+import { logout, getCurrentUser } from "../services/auth.service";
+import { useCart } from "../context/CartContext";
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  
   const [currentUser, setCurrentUser] = useState<any>(null);
+  
+  // ✅ Hook do carrinho (conectado ao backend)
+  const { totalItems, openCart } = useCart();
 
   useEffect(() => {
     setCurrentUser(getCurrentUser());
   }, []);
 
   const isActive = (path: string) => pathname === path;
-  
-  // ✅ Verificar se usuário é ADMIN
   const isAdmin = currentUser?.role === "ADMIN";
   
-  // ✅ Links do menu (com controle de acesso)
   const navLinks = [
     { href: "/", label: "Home", icon: "bi-house-door", adminOnly: false },
-    { href: "/users/search", label: "Users", icon: "bi-people", adminOnly: true },  // 🔒 ADMIN
-    { href: "/users/register", label: "Register User", icon: "bi-person-plus", adminOnly: true },  // 🔒 ADMIN
-    { href: "/products", label: "Products", icon: "bi-box-seam", adminOnly: true },  // 🔒 ADMIN
+    { href: "/users/search", label: "Users", icon: "bi-people", adminOnly: true },
+    { href: "/users/register", label: "Register User", icon: "bi-person-plus", adminOnly: true },
+    { href: "/products", label: "Products", icon: "bi-box-seam", adminOnly: true },
     { href: "/orders", label: "Orders", icon: "bi-cart", adminOnly: false },
     { href: "/reports", label: "Reports", icon: "bi-file-earmark-text", adminOnly: false },
     { href: "/settings", label: "Settings", icon: "bi-gear", adminOnly: false },
   ];
 
-  // ✅ Filtrar links baseado no role do usuário
-  const filteredNavLinks = navLinks.filter(link => {
-    if (link.adminOnly) {
-      return isAdmin;  // Só mostra se for ADMIN
-    }
-    return true;  // Mostra para todos
-  });
+  const filteredNavLinks = navLinks.filter(link => !link.adminOnly || isAdmin);
 
   function handleLogout() {
     logout();
@@ -90,7 +84,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* ✅ Sidebar Links (FILTRADOS POR ROLE) */}
+        {/* Sidebar Links */}
         <ul className="nav flex-column p-3">
           {filteredNavLinks.map((link) => (
             <li key={link.href} className="nav-item mb-2">
@@ -113,10 +107,9 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* ✅ SIDEBAR FOOTER COM FOTO */}
+        {/* SIDEBAR FOOTER */}
         <div className="position-absolute bottom-0 w-100 p-3 border-top border-light border-opacity-25">
           <div className="d-flex align-items-center text-white mb-2">
-            {/* ✅ FOTO DO PERFIL */}
             {currentUser?.profileImageUrl ? (
               <img 
                 src={currentUser.profileImageUrl} 
@@ -147,7 +140,6 @@ export default function Navbar() {
               </div>
             )}
             
-            {/* NOME E EMAIL */}
             <div style={{ flex: 1, minWidth: 0 }}>
               <div className="fw-semibold" style={{ fontSize: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 {currentUser?.fullName || "Admin User"}
@@ -155,7 +147,6 @@ export default function Navbar() {
               <small className="text-white text-opacity-75" style={{ fontSize: "11px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", display: "block" }}>
                 {currentUser?.email || "admin@example.com"}
               </small>
-              {/* ✅ BADGE DO ROLE */}
               {isAdmin && (
                 <span className="badge bg-danger mt-1" style={{ fontSize: "0.65rem" }}>
                   ADMIN
@@ -177,7 +168,7 @@ export default function Navbar() {
       {/* NAVBAR */}
       <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
         <div className="container-fluid">
-          {/* ✅ BOTÃO SIDEBAR (ESQUERDA) */}
+          {/* Botão Sidebar */}
           <button
             className="btn me-2 text-white"
             type="button"
@@ -194,25 +185,40 @@ export default function Navbar() {
             <i className="bi bi-list" style={{ fontSize: "1.8rem" }}></i>
           </button>
 
-          {/* ✅ LOGO */}
+          {/* Logo */}
           <Link href="/" className="navbar-brand">
             <i className="bi bi-shop me-2"></i>
             Order App
           </Link>
 
-          {/* ✅ NAVBAR LINKS - Só desktop + FILTRADOS POR ROLE */}
+          {/* ✅ BOTÃO CARRINHO - Visível em todas as telas */}
+          <button
+            className="btn btn-light position-relative ms-auto me-2"
+            style={{ borderRadius: "50%", width: "45px", height: "45px" }}
+            onClick={openCart}
+            title="Abrir Carrinho"
+          >
+            <i className="bi bi-cart3" style={{ fontSize: "1.3rem" }}></i>
+            {/* ✅ Badge com quantidade (do backend) */}
+            {totalItems > 0 && (
+              <span 
+                className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                style={{ fontSize: "0.65rem" }}
+              >
+                {totalItems}
+              </span>
+            )}
+          </button>
+
+          {/* Navbar Links - Desktop */}
           <div className="collapse navbar-collapse d-none d-lg-flex" id="navbarNav">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <Link
-                  href="/"
-                  className={`nav-link ${isActive("/") ? "active" : ""}`}
-                >
+                <Link href="/" className={`nav-link ${isActive("/") ? "active" : ""}`}>
                   Home
                 </Link>
               </li>
               
-              {/* ✅ USERS - SÓ ADMIN */}
               {isAdmin && (
                 <li className="nav-item">
                   <Link
@@ -224,7 +230,6 @@ export default function Navbar() {
                 </li>
               )}
               
-              {/* ✅ PRODUCTS - SÓ ADMIN */}
               {isAdmin && (
                 <li className="nav-item">
                   <Link
@@ -236,7 +241,6 @@ export default function Navbar() {
                 </li>
               )}
               
-              {/* ✅ ORDERS - TODOS */}
               <li className="nav-item">
                 <Link
                   href="/orders"
@@ -247,7 +251,7 @@ export default function Navbar() {
               </li>
             </ul>
 
-            {/* ✅ USER INFO E LOGOUT - Desktop */}
+            {/* User Info - Desktop */}
             <div className="d-flex align-items-center">
               <span className="text-white me-3">
                 <i className="bi bi-person-circle me-1"></i>

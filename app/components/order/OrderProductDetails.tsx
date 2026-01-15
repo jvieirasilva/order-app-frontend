@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Product } from "@/app/services/product.service";
+import { useCart } from "@/app/context/CartContext"; // ✅ Importar
 
 interface OrderProductDetailsProps {
   product: Product | null;
@@ -11,6 +12,9 @@ interface OrderProductDetailsProps {
 export default function OrderProductDetails({ product, onClose }: OrderProductDetailsProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [isAddingToCart, setIsAddingToCart] = useState(false); // ✅ Loading state
+  
+  const { addItem } = useCart(); // ✅ Hook do carrinho
 
   useEffect(() => {
     setCurrentImageIndex(0);
@@ -69,10 +73,33 @@ export default function OrderProductDetails({ product, onClose }: OrderProductDe
     alert(`Comprando ${quantity} unidade(s) de "${product.name}"`);
   };
 
-  const handleAddToCart = () => {
-    // TODO: Implementar lógica de adicionar ao carrinho
-    console.log(`Adicionar ao carrinho: ${product.name}, Quantidade: ${quantity}`);
-    alert(`Adicionado ${quantity} unidade(s) de "${product.name}" ao carrinho`);
+  // ✅ IMPLEMENTAÇÃO CORRETA
+  const handleAddToCart = async () => {
+    if (!product) return;
+    
+    setIsAddingToCart(true);
+    
+    try {
+      await addItem(product.id, quantity);
+      
+      // ✅ Feedback de sucesso
+      alert(`✅ ${quantity} unidade(s) de "${product.name}" adicionado(s) ao carrinho!`);
+      
+      // ✅ Opcional: Fechar modal após adicionar
+      // onClose();
+      
+    } catch (error: any) {
+      console.error("Erro ao adicionar ao carrinho:", error);
+      
+      const errorMessage = error.response?.data?.message || 
+                          error.message || 
+                          "Erro ao adicionar ao carrinho";
+      
+      alert(`❌ ${errorMessage}`);
+      
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   return (
@@ -278,14 +305,23 @@ export default function OrderProductDetails({ product, onClose }: OrderProductDe
                           Comprar agora
                         </button>
 
-                        {/* Adicionar ao Carrinho */}
+                        {/* Adicionar ao Carrinho - ✅ CORRIGIDO */}
                         <button
                           className="btn btn-outline-primary btn-lg"
                           onClick={handleAddToCart}
-                          disabled={product.stockQuantity === 0 || !product.isActive}
+                          disabled={product.stockQuantity === 0 || !product.isActive || isAddingToCart}
                         >
-                          <i className="bi bi-cart-plus me-2"></i>
-                          Adicionar ao carrinho
+                          {isAddingToCart ? (
+                            <>
+                              <span className="spinner-border spinner-border-sm me-2"></span>
+                              Adicionando...
+                            </>
+                          ) : (
+                            <>
+                              <i className="bi bi-cart-plus me-2"></i>
+                              Adicionar ao carrinho
+                            </>
+                          )}
                         </button>
                       </div>
                     </div>
