@@ -39,7 +39,8 @@ export default function RegisterPage() {
     else if (!emailRegex.test(formData.email)) e.email = "Invalid email address";
 
     if (!formData.password) e.password = "Password is required";
-    else if (formData.password.length < 6) e.password = "Password must be at least 6 characters";
+    else if (formData.password.length < 5) e.password = "Password must be at least 5 characters";
+    else if (formData.password.length > 8) e.password = "Password must be at most 8 characters";
 
     if (!formData.confirmPassword) e.confirmPassword = "Please confirm your password";
     else if (formData.password !== formData.confirmPassword) 
@@ -65,22 +66,37 @@ export default function RegisterPage() {
 
     try {
       setLoading(true);
+      
       await registerUser({
         fullName: formData.fullName,
         email: formData.email,
         password: formData.password,
-        role: "USER", // Usuário padrão para registro público
-        isActive: true,
-        isNotLocked: true,
-        isChangePassword: false, // Não forçar mudança de senha
-        profileImage: profileImage || undefined, // Foto de perfil (opcional)
+        role: "USER", 
+        isActive: false,
+        isNotLocked: false,
+        isChangePassword: false,
+        profileImage: profileImage || undefined,
       });
 
-      // Redirect to login with success message
-      router.push("/login?registered=true");
+      alert("✅ Registro realizado com sucesso! Verifique seu email para confirmar a conta.");
+      router.push("/login");
+      
     } catch (err: any) {
-      const message = err?.response?.data?.message || "Registration failed";
-      setError(message);
+      console.error("Registration error:", err);
+      
+      const errorMessage = 
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        err?.response?.data ||
+        err?.message ||
+        "Registration failed. Please try again.";
+      
+      const finalMessage = typeof errorMessage === 'string' 
+        ? errorMessage 
+        : JSON.stringify(errorMessage);
+      
+      setError(finalMessage);
+      
     } finally {
       setLoading(false);
     }
@@ -91,7 +107,6 @@ export default function RegisterPage() {
 
   return (
     <>
-      {/* Public Navbar */}
       <PublicNavbar />
 
       <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
@@ -100,7 +115,6 @@ export default function RegisterPage() {
             <div className="col-md-6">
               <div className="card shadow-lg border-0">
                 <div className="card-body p-5">
-                  {/* Logo/Brand */}
                   <div className="text-center mb-4">
                     <div
                       className="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle mb-3"
@@ -112,15 +126,19 @@ export default function RegisterPage() {
                     <p className="text-muted">Join Order App today</p>
                   </div>
 
-                  {/* Error Message */}
                   {error && (
-                    <div className="alert alert-danger" role="alert">
-                      <i className="bi bi-exclamation-triangle me-2"></i>
-                      {error}
+                    <div className="alert alert-danger alert-dismissible fade show" role="alert">
+                      <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                      <strong>Error:</strong> {error}
+                      <button 
+                        type="button" 
+                        className="btn-close" 
+                        onClick={() => setError(null)}
+                        aria-label="Close"
+                      ></button>
                     </div>
                   )}
 
-                  {/* Registration Form */}
                   <form onSubmit={handleSubmit} noValidate>
                     {/* Profile Photo */}
                     <div className="mb-4 text-center">
@@ -157,7 +175,7 @@ export default function RegisterPage() {
                             if (file) {
                               setAvatarSrc(URL.createObjectURL(file));
                             } else {
-                              setAvatarSrc("/jose.png");
+                              setAvatarSrc("/picture.png");
                             }
                           }}
                         />
@@ -186,12 +204,14 @@ export default function RegisterPage() {
                           className={inputClass("fullName")}
                           placeholder="John Doe"
                           value={formData.fullName}
-                          onChange={(e) =>
-                            setFormData({ ...formData, fullName: e.target.value })
-                          }
+                          onChange={(e) => {
+                            const value = e.target.value.slice(0, 255);
+                            setFormData({ ...formData, fullName: value });
+                          }}
                           onBlur={() => setTouched((t) => ({ ...t, fullName: true }))}
                           disabled={loading}
                           autoComplete="name"
+                          maxLength={255}
                         />
                         {touched.fullName && errors.fullName && (
                           <div className="invalid-feedback">{errors.fullName}</div>
@@ -211,10 +231,14 @@ export default function RegisterPage() {
                           className={inputClass("email")}
                           placeholder="you@example.com"
                           value={formData.email}
-                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          onChange={(e) => {
+                            const value = e.target.value.slice(0, 255);
+                            setFormData({ ...formData, email: value });
+                          }}
                           onBlur={() => setTouched((t) => ({ ...t, email: true }))}
                           disabled={loading}
                           autoComplete="email"
+                          maxLength={255}
                         />
                         {touched.email && errors.email && (
                           <div className="invalid-feedback">{errors.email}</div>
@@ -234,12 +258,14 @@ export default function RegisterPage() {
                           className={inputClass("password")}
                           placeholder="••••••••"
                           value={formData.password}
-                          onChange={(e) =>
-                            setFormData({ ...formData, password: e.target.value })
-                          }
+                          onChange={(e) => {
+                            const value = e.target.value.slice(0, 8);
+                            setFormData({ ...formData, password: value });
+                          }}
                           onBlur={() => setTouched((t) => ({ ...t, password: true }))}
                           disabled={loading}
                           autoComplete="new-password"
+                          maxLength={8}
                         />
                         <button
                           type="button"
@@ -253,6 +279,7 @@ export default function RegisterPage() {
                           <div className="invalid-feedback">{errors.password}</div>
                         )}
                       </div>
+                      <small className="text-muted">8 characters</small>
                     </div>
 
                     {/* Confirm Password */}
@@ -267,12 +294,14 @@ export default function RegisterPage() {
                           className={inputClass("confirmPassword")}
                           placeholder="••••••••"
                           value={formData.confirmPassword}
-                          onChange={(e) =>
-                            setFormData({ ...formData, confirmPassword: e.target.value })
-                          }
+                          onChange={(e) => {
+                            const value = e.target.value.slice(0, 8);
+                            setFormData({ ...formData, confirmPassword: value });
+                          }}
                           onBlur={() => setTouched((t) => ({ ...t, confirmPassword: true }))}
                           disabled={loading}
                           autoComplete="new-password"
+                          maxLength={8}
                         />
                         <button
                           type="button"
@@ -288,7 +317,6 @@ export default function RegisterPage() {
                       </div>
                     </div>
 
-                    {/* Terms & Conditions */}
                     <div className="form-check mb-4">
                       <input
                         className="form-check-input"
@@ -305,7 +333,6 @@ export default function RegisterPage() {
                       </label>
                     </div>
 
-                    {/* Submit Button */}
                     <button
                       type="submit"
                       className="btn btn-primary w-100 py-2 fw-semibold"
@@ -322,7 +349,6 @@ export default function RegisterPage() {
                     </button>
                   </form>
 
-                  {/* Sign In Link */}
                   <div className="text-center mt-4">
                     <p className="text-muted mb-0">
                       Already have an account?{" "}
@@ -334,7 +360,6 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* Footer */}
               <div className="text-center mt-4 text-muted">
                 <small>© 2025 Order App. All rights reserved.</small>
               </div>
