@@ -146,7 +146,7 @@ export default function OrderProductCard({ product, onClick }: OrderProductCardP
         <div className="d-flex justify-content-between align-items-center mb-2">
           <div>
             <div className="h5 mb-0 text-primary">
-              R$ {product.price.toFixed(2)}
+              € {product.price.toFixed(2)}
             </div>
           </div>
           <div className="text-end">

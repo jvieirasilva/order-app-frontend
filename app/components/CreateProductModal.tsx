@@ -7,9 +7,11 @@ interface CreateProductModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  companyId: number | null; 
+
 }
 
-export default function CreateProductModal({ isOpen, onClose, onSuccess }: CreateProductModalProps) {
+export default function CreateProductModal({ isOpen, onClose, onSuccess,companyId }: CreateProductModalProps) {
   const [formData, setFormData] = useState<{
     name: string;
     description: string;
@@ -119,8 +121,12 @@ export default function CreateProductModal({ isOpen, onClose, onSuccess }: Creat
         isActive: formData.isActive,
         productImages: selectedImages,
       };
-
-      await createProduct(productData);
+      if (!companyId) {
+        alert("Empresa não encontrada para o usuário logado.");
+        return;
+      }
+      debugger
+      await createProduct(companyId,productData);
       
       // Resetar formulário
       setFormData({
@@ -226,7 +232,7 @@ export default function CreateProductModal({ isOpen, onClose, onSuccess }: Creat
                       {/* Preço */}
                       <div className="col-md-4 mb-3">
                         <label className="form-label fw-semibold">
-                          Preço (R$) <span className="text-danger">*</span>
+                          Preço (€) <span className="text-danger">*</span>
                         </label>
                         <input
                           type="number"

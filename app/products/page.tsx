@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { searchProducts, Product, deleteProduct } from "@/app/services/product.service";
+import { searchProductsByCompany,  Product, deleteProduct } from "@/app/services/product.service";
 import { isAuthenticated } from "@/app/services/auth.service";
 import { useDebounce } from "@/app/hooks/useDebounce";
 import ProductCard from "@/app/components/ProductCard";
@@ -10,6 +10,8 @@ import ProductDetails from "@/app/components/ProductDetails";
 import Navbar from "@/app/components/Navbar";
 import CreateProductModal from "@/app/components/CreateProductModal";
 import EditProductModal from "@/app/components/EditProductModal";
+
+
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -30,6 +32,9 @@ export default function ProductsPage() {
   const [totalElements, setTotalElements] = useState(0);
   const [pageSize] = useState(12); // 3 linhas x 4 colunas
 
+  const [companyId, setCompanyId] = useState<number | null>(null);
+  
+
   // Verificar autenticação
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -39,34 +44,43 @@ export default function ProductsPage() {
 
   // ✅ PROTEÇÃO: REDIRECIONAR SE NÃO FOR ADMIN
   useEffect(() => {
-    const userStr = localStorage.getItem("user");
-    if (userStr) {
-      try {
-        const user = JSON.parse(userStr);
-        if (user.role !== "ADMIN") {
-          console.log("⚠️ Acesso negado: usuário não é ADMIN");
-          router.push("/");
-          return;
-        }
-      } catch (error) {
-        console.error("Erro ao verificar role:", error);
+  const userStr = localStorage.getItem("user");
+  if (userStr) {
+    try {
+      const user = JSON.parse(userStr);
+
+      if (user.role !== "ADMIN") {
         router.push("/");
         return;
       }
-    } else {
-      console.log("⚠️ Usuário não encontrado no localStorage");
+
+      const id = user.company?.id ?? null;
+      if (!id) {
+        console.log("⚠️ Usuário ADMIN sem company vinculada");
+        router.push("/");
+        return;
+      }
+
+      setCompanyId(id);
+    } catch (error) {
       router.push("/");
       return;
     }
-  }, [router]);
+  } else {
+    router.push("/");
+    return;
+  }
+}, [router]);
 
   // Buscar produtos
   const fetchProducts = useCallback(async () => {
+  if (!companyId) return;
     try {
       setLoading(true);
       setError(null);
 
-      const response = await searchProducts({
+      const response = await searchProductsByCompany({
+        companyId,
         term: searchTerm,
         page: currentPage,
         size: pageSize,
@@ -83,14 +97,14 @@ export default function ProductsPage() {
       setLoading(false);
       setSearching(false);
     }
-  }, [searchTerm, currentPage, pageSize]);
+  }, [companyId,searchTerm, currentPage, pageSize]);
 
   useEffect(() => {
-    if (isAuthenticated()) {
-      fetchProducts();
-    }
-  }, [fetchProducts]);
-
+  if (!companyId) return;
+  if (isAuthenticated() && companyId) {
+    fetchProducts();
+  }
+}, [fetchProducts, companyId]);
   // Indicador de busca ativa
   useEffect(() => {
     if (searchInput !== searchTerm) {
@@ -351,6 +365,8 @@ export default function ProductsPage() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSuccess={handleCreateSuccess}
+        companyId={companyId}
+
       />
 
       {/* Modal de Editar Produto */}
@@ -359,6 +375,7 @@ export default function ProductsPage() {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         onSuccess={handleEditSuccess}
+        companyId={companyId}
       />
     </>
   );

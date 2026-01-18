@@ -26,6 +26,7 @@ export default function Navbar() {
     { href: "/users/search", label: "Users", icon: "bi-people", adminOnly: true },
     { href: "/users/register", label: "Register User", icon: "bi-person-plus", adminOnly: true },
     { href: "/products", label: "Products", icon: "bi-box-seam", adminOnly: true },
+    { href: "/company", label: "Company", icon: "bi-building", adminOnly: true },
     { href: "/orders", label: "Orders", icon: "bi-cart", adminOnly: false },
     { href: "/reports", label: "Reports", icon: "bi-file-earmark-text", adminOnly: false },
     { href: "/settings", label: "Settings", icon: "bi-gear", adminOnly: false },
@@ -237,6 +238,17 @@ export default function Navbar() {
                     className={`nav-link ${isActive("/products") ? "active" : ""}`}
                   >
                     Products
+                  </Link>
+                </li>
+              )}
+
+              {isAdmin && (
+                <li className="nav-item">
+                  <Link
+                    href="/company"
+                    className={`nav-link ${isActive("/company") ? "active" : ""}`}
+                  >
+                    Company
                   </Link>
                 </li>
               )}

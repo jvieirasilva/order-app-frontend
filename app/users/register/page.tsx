@@ -28,6 +28,7 @@ export default function RegisterPage() {
   });
 
   const emailRegex = useMemo(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/, []);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const errors = useMemo(() => {
     const e: Record<string, string> = {};
@@ -55,6 +56,9 @@ export default function RegisterPage() {
     e.preventDefault();
     setError(null);
 
+    setSuccess(null);
+    setError(null);
+
     setTouched({
       fullName: true,
       email: true,
@@ -78,8 +82,9 @@ export default function RegisterPage() {
         profileImage: profileImage || undefined,
       });
 
-      alert("✅ Registro realizado com sucesso! Verifique seu email para confirmar a conta.");
-      router.push("/login");
+      
+      setSuccess("Cadastro realizado com sucesso! Verifique seu email para confirmar a conta.");
+      setTimeout(() => router.push("/login"), 15000);
       
     } catch (err: any) {
       console.error("Registration error:", err);
@@ -125,6 +130,18 @@ export default function RegisterPage() {
                     <h3 className="fw-bold">Create Account</h3>
                     <p className="text-muted">Join Order App today</p>
                   </div>
+                  {success && (
+                  <div className="alert alert-success alert-dismissible fade show" role="alert">
+                    <i className="bi bi-check-circle-fill me-2"></i>
+                    <strong>Sucesso:</strong> {success}
+                    <button
+                      type="button"
+                      className="btn-close"
+                      onClick={() => setSuccess(null)}
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  )}
 
                   {error && (
                     <div className="alert alert-danger alert-dismissible fade show" role="alert">

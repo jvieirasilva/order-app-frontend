@@ -20,7 +20,7 @@ export default function LoginPage() {
   });
 
   const emailRegex = useMemo(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/, []);
-  debugger
+
   const errors = useMemo(() => {
     const e: Record<string, string> = {};
 
@@ -54,7 +54,7 @@ export default function LoginPage() {
       localStorage.setItem("accessToken", response.accessToken);
       localStorage.setItem("refreshToken", response.refreshToken);
       localStorage.setItem("user", JSON.stringify(response.user));
-      
+      debugger
       setTimeout(() => {
         window.location.href = "/order";
       }, 100);

@@ -203,7 +203,7 @@ export default function ProductCard({ product, onClick, onEdit, onDelete }: Prod
         <div className="mt-auto">
           <div className="d-flex align-items-baseline gap-2 mb-2">
             <span className="h5 mb-0 text-dark fw-bold">
-              R$ {product.price.toFixed(2).replace(".", ",")}
+              € {product.price.toFixed(2).replace(".", ",")}
             </span>
           </div>
           

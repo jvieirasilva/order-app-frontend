@@ -46,6 +46,14 @@ export interface SearchParams {
   sort?: string;
 }
 
+export interface SearchByCompanyParams {
+  companyId?: number;
+  term?: string;
+  page?: number;
+  size?: number;
+  sort?: string;
+}
+
 /**
  * Busca produtos com paginação
  */
@@ -63,6 +71,29 @@ export async function searchProducts(params: SearchParams = {}): Promise<Pageabl
   
   return response.data;
 }
+
+
+/**
+ * Busca produtos com paginação
+ */
+export async function searchProductsByCompany(params: SearchByCompanyParams = {}): Promise<PageableResponse> {
+  const { companyId, term = "", page = 0, size = 12, sort = "name" } = params;
+  
+  const response = await api.get("/api/products/searchByCompany", {
+    params: {
+      companyId,
+      term,
+      page,
+      size,
+      sort
+    }
+  });
+  
+  return response.data;
+}
+
+
+
 
 /**
  * Busca produto por ID
@@ -87,9 +118,10 @@ export interface CreateProductData {
 /**
  * Criar novo produto com imagens
  */
-export async function createProduct(data: CreateProductData): Promise<Product> {
+export async function createProduct(companyId: number,data: CreateProductData): Promise<Product> {
   const formData = new FormData();
   
+  formData.append("companyId", companyId.toString()); 
   formData.append('name', data.name);
   formData.append('description', data.description);
   formData.append('price', data.price.toString());
@@ -125,9 +157,10 @@ export interface UpdateProductData {
 /**
  * Atualizar produto existente
  */
-export async function updateProduct(id: number, data: UpdateProductData): Promise<Product> {
+export async function updateProduct(companyId: number, id: number, data: UpdateProductData): Promise<Product> {
   const formData = new FormData();
   
+  formData.append("companyId", companyId.toString()); 
   formData.append('name', data.name);
   formData.append('description', data.description);
   formData.append('price', data.price.toString());

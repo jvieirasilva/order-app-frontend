@@ -8,9 +8,12 @@ interface EditProductModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  companyId: number | null; 
 }
 
-export default function EditProductModal({ product, isOpen, onClose, onSuccess }: EditProductModalProps) {
+        
+        
+export default function EditProductModal({ product, isOpen, onClose, onSuccess, companyId }: EditProductModalProps) {
   const [formData, setFormData] = useState<{
     name: string;
     description: string;
@@ -150,7 +153,12 @@ export default function EditProductModal({ product, isOpen, onClose, onSuccess }
         productImages: newImages.length > 0 ? newImages : undefined,
       };
 
-      await updateProduct(product.id, productData);
+      if (!companyId) {
+        alert("Empresa não encontrada para o usuário logado.");
+        return;
+      }
+
+      await updateProduct(companyId, product.id, productData);
       
       onSuccess();
       onClose();
@@ -245,7 +253,7 @@ export default function EditProductModal({ product, isOpen, onClose, onSuccess }
                       {/* Preço */}
                       <div className="col-md-4 mb-3">
                         <label className="form-label fw-semibold">
-                          Preço (R$) <span className="text-danger">*</span>
+                          Preço (€) <span className="text-danger">*</span>
                         </label>
                         <input
                           type="number"

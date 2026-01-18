@@ -130,7 +130,7 @@ export default function CartDrawer() {
 
                           {/* Preço */}
                           <div className="text-primary fw-bold mb-2">
-                            R$ {item.priceAtAddition.toFixed(2)}
+                            € {item.priceAtAddition.toFixed(2)}
                           </div>
 
                           {/* Controles de Quantidade */}
@@ -178,7 +178,7 @@ export default function CartDrawer() {
 
                           {/* Subtotal */}
                           <div className="text-end text-muted small mt-2">
-                            Subtotal: R$ {item.subtotal.toFixed(2)}
+                            Subtotal: € {item.subtotal.toFixed(2)}
                           </div>
                         </div>
                       </div>
@@ -207,7 +207,7 @@ export default function CartDrawer() {
             <div className="d-flex justify-content-between align-items-center mb-3">
               <span className="fw-bold">Total:</span>
               <span className="fs-4 fw-bold text-primary">
-                R$ {totalPrice.toFixed(2)}
+                € {totalPrice.toFixed(2)}
               </span>
             </div>
 

@@ -219,7 +219,7 @@ export default function OrderProductDetails({ product, onClose }: OrderProductDe
                       {/* Preço */}
                       <div className="mb-4">
                         <div className="h2 text-primary mb-0">
-                          R$ {product.price.toFixed(2)}
+                          € {product.price.toFixed(2)}
                         </div>
                       </div>
 

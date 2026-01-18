@@ -224,7 +224,7 @@ export default function ProductDetails({ product, onClose }: ProductDetailsProps
                         <div className="mb-4">
                           <div className="d-flex align-items-baseline gap-2">
                             <span className="display-5 fw-bold text-dark">
-                              R$ {product.price.toFixed(2).replace(".", ",")}
+                              € {product.price.toFixed(2).replace(".", ",")}
                             </span>
                           </div>
                           <small className="text-muted">À vista no PIX/transferência</small>

@@ -7,6 +7,25 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface CompanyResponseDTO {
+  id: number;
+  companyName: string;
+  tradeName: string;
+  nif: string;
+  email: string;
+  phone: string;
+  address: string;
+  postalCode: string;
+  city: string;
+  country: string;
+  isActive: boolean;
+
+  // opcionais
+  totalProducts?: number;
+  activeProducts?: number;
+  totalAdministrators?: number;
+}
+
 export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
@@ -20,6 +39,8 @@ export interface AuthResponse {
     isNotLocked: boolean;
     joinDate: string;
     lastLoginDate?: string;
+    company?: CompanyResponseDTO | null;
+    
   };
 }
 
@@ -32,6 +53,7 @@ export interface RegisterRequest {
   isNotLocked: boolean;
   isChangePassword: boolean;
   profileImage?: File;
+
 }
 
 export type RegisterPayload = {
@@ -44,6 +66,22 @@ export type RegisterPayload = {
   isChangePassword: boolean;
   profileImage?: File;
 };
+
+
+export function getCompanyId(): number | null {
+  if (typeof window === "undefined") return null;
+
+  const userStr = localStorage.getItem("user");
+  if (!userStr || userStr === "undefined" || userStr === "null") return null;
+
+  try {
+    const user = JSON.parse(userStr) as AuthResponse["user"];
+    return user.company?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
 
 export async function login(credentials: LoginRequest): Promise<AuthResponse> {
   // ✅ LIMPAR localStorage ANTES de fazer login
