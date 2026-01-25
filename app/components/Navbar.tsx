@@ -24,7 +24,7 @@ export default function Navbar() {
   const navLinks = [
     { href: "/", label: "Home", icon: "bi-house-door", adminOnly: false },
     { href: "/users/search", label: "Users", icon: "bi-people", adminOnly: true },
-    { href: "/users/register", label: "Register User", icon: "bi-person-plus", adminOnly: true },
+    { href: "/users/registerAdmin", label: "Register User", icon: "bi-person-plus", adminOnly: true },
     { href: "/products", label: "Products", icon: "bi-box-seam", adminOnly: true },
     { href: "/company", label: "Company", icon: "bi-building", adminOnly: true },
     { href: "/orders", label: "Orders", icon: "bi-cart", adminOnly: false },
