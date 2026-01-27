@@ -140,7 +140,7 @@ export default function ProductsPage() {
     // Recarregar lista de produtos
     fetchProducts();
   };
-
+ 
   const handleEdit = (product: Product) => {
     setProductToEdit(product);
     setIsEditModalOpen(true);

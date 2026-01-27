@@ -13,7 +13,7 @@ export interface CompanyRequest {
   country?: string;
   isActive?: boolean;
 }
-
+ 
 export interface CompanyResponse {
   id: number;
   companyName: string;

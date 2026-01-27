@@ -57,11 +57,12 @@ export default function OrderPage() {
     }
   }, [searchTerm, currentPage, pageSize]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (isAuthenticated()) {
       fetchProducts();
     }
   }, [fetchProducts]);
+  */
 
   // Indicador de busca ativa
   useEffect(() => {

@@ -9,7 +9,7 @@ export interface AddToCartRequest {
 export interface UpdateCartItemRequest {
   quantity: number;
 }
-
+ 
 export interface CartItemResponse {
   cartItemId: number;
   productId: number;

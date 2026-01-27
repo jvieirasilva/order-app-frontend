@@ -106,7 +106,7 @@ export default function RegisterPage() {
       setLoading(false);
     }
   }
-
+ 
   const inputClass = (field: keyof typeof touched) =>
     `form-control ${touched[field] && errors[field] ? "is-invalid" : ""}`;
 

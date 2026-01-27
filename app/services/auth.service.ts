@@ -6,7 +6,7 @@ export interface LoginRequest {
   email: string;
   password: string;
 }
-
+ 
 export interface CompanyResponseDTO {
   id: number;
   companyName: string;

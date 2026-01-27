@@ -4,14 +4,14 @@ export interface RegisterAdminUserData {
   fullName: string;
   email: string;
   password: string;
-  role: "ADMIN" | "USER";
+  role: "ADMIN" | "USER"; 
   isActive: boolean;
   isNotLocked: boolean;
   isChangePassword: boolean;
   profileImage?: File;
   companyId: string;
 }
-
+ 
 export interface AdminUserResponse {
   id: number;
   fullName: string;

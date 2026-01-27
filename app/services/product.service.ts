@@ -128,7 +128,7 @@ export async function createProduct(companyId: number,data: CreateProductData): 
   formData.append('stockQuantity', data.stockQuantity.toString());
   formData.append('isActive', data.isActive.toString());
   
-  // Adicionar todas as imagens (máximo 10)
+  // Adicionar todas as imagens (máximo 10) 
   data.productImages.forEach((file) => {
     formData.append('productImages', file);
   });

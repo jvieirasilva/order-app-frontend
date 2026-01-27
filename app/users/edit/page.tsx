@@ -74,7 +74,7 @@ export default function RegisterPage() {
 
     markAllTouched();
     if (!isValid) return;
-
+ 
     try {
       setLoading(true);
 
