@@ -25,12 +25,7 @@ export default function OrderPage() {
   const [totalElements, setTotalElements] = useState(0);
   const [pageSize] = useState(12); // 3 linhas x 4 colunas
 
-  // Verificar autenticação (não verifica ROLE - todos podem acessar)
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      router.push("/login");
-    }
-  }, [router]);
+  
 
   // Buscar produtos
   const fetchProducts = useCallback(async () => {
