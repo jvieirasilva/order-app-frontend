@@ -1,16 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { searchProducts, Product } from "@/app/services/product.service";
-import { isAuthenticated } from "@/app/services/auth.service";
 import { useDebounce } from "@/app/hooks/useDebounce";
 import OrderProductCard from "@/app/components/order/OrderProductCard";
 import OrderProductDetails from "@/app/components/order/OrderProductDetails";
 import Navbar from "@/app/components/Navbar";
 
 export default function OrderPage() {
-  const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
