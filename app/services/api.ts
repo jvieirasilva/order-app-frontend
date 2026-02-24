@@ -17,6 +17,8 @@ api.interceptors.request.use(
       '/api/auth/login',
       '/api/auth/register',
       '/api/auth/forgot-password',
+       '/api/products/search',         
+      '/api/products/searchByCompany', 
     ];
 
     // ✅ Verificar se a URL é uma rota pública
