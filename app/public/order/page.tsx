@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { searchProducts, Product } from "@/app/services/product.service";
 import { useDebounce } from "@/app/hooks/useDebounce";
 import OrderProductCard from "./OrderProductCard";
-import OrderProductDetailsPublic from "./OrderProductDetailsPublic";
+import OrderProductDetails from "@/app/components/order/OrderProductDetails";
 import NavbarPublic from "../NavbarPublic";
 
 export default function OrderPage() {
@@ -256,7 +256,7 @@ export default function OrderPage() {
       </div>
 
       {/* Modal de Detalhes - Versão Pública */}
-      <OrderProductDetailsPublic product={selectedProduct} onClose={handleCloseDetails} />
+      <OrderProductDetails product={selectedProduct} onClose={handleCloseDetails} />
     </>
   );
 }
