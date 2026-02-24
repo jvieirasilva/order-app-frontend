@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { Product } from "@/app/services/product.service";
 import ImageZoom from "./ImageZoom";
 import ImageLightbox from "./ImageLightbox";
+import { addToCart } from "@/app/services/cart.service"; 
+import { isAuthenticated } from "@/app/services/auth.service";
 
 interface OrderProductDetailsProps {
   product: Product | null;
@@ -87,15 +89,24 @@ export default function OrderProductDetailsPublic({ product, onClose }: OrderPro
   };
 
   // ✅ VERSÃO PÚBLICA - Redireciona para login
-  const handleBuyNow = () => {
-    alert("Por favor, faça login para comprar produtos.");
+  const handleBuyNow = async () => {
+
+    if (!isAuthenticated()) {
     window.location.href = "/login";
+    return;
+  }
+  await addToCart({ productId: product.id, quantity });
+  window.location.href = "/cart"; // ajusta o path do carrinho
+
   };
 
   // ✅ VERSÃO PÚBLICA - Redireciona para login
-  const handleAddToCart = () => {
-    alert("Por favor, faça login para adicionar produtos ao carrinho.");
+  const handleAddToCart = async () => {
+   if (!isAuthenticated()) {
     window.location.href = "/login";
+    return;
+  }
+  await addToCart({ productId: product.id, quantity });
   };
 
   return (
@@ -300,11 +311,6 @@ export default function OrderProductDetailsPublic({ product, onClose }: OrderPro
                         </div>
                       </div>
 
-                      {/* ⚠️ Aviso para fazer login */}
-                      <div className="alert alert-info mb-4">
-                        <i className="bi bi-info-circle me-2"></i>
-                        Faça login para comprar produtos
-                      </div>
 
                       {/* Botões de Ação */}
                       <div className="d-grid gap-3">

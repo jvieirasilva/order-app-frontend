@@ -67,7 +67,8 @@ api.interceptors.response.use(
       const url = error.config?.url || "";
       const isPublicRoute = url.includes("/authenticate") || 
                            url.includes("/register") || 
-                           url.includes("/forgot-password");
+                           url.includes("/forgot-password") ||
+                           url.includes("/products/search");  
       
       if (!isPublicRoute) {
         console.log("🚫 Unauthorized - Limpando localStorage e redirecionando");

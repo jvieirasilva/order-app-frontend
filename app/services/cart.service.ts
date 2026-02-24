@@ -6,6 +6,7 @@ export interface AddToCartRequest {
   quantity: number;
 }
 
+
 export interface UpdateCartItemRequest {
   quantity: number;
 }
