@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { Product } from "@/app/services/product.service";
 import { useCart } from "@/app/context/CartContext"; // ✅ Importar
+import { isAuthenticated } from "@/app/services/auth.service"; // ← adiciona este import
+import { useRouter } from "next/navigation"; // ← adiciona este import
 
 interface OrderProductDetailsProps {
   product: Product | null;
@@ -10,6 +12,7 @@ interface OrderProductDetailsProps {
 }
 
 export default function OrderProductDetails({ product, onClose }: OrderProductDetailsProps) {
+  const router = useRouter();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false); // ✅ Loading state
@@ -69,37 +72,36 @@ export default function OrderProductDetails({ product, onClose }: OrderProductDe
 
   const handleBuyNow = () => {
     // TODO: Implementar lógica de comprar agora
-    console.log(`Comprar agora: ${product.name}, Quantidade: ${quantity}`);
-    alert(`Comprando ${quantity} unidade(s) de "${product.name}"`);
+    //console.log(`Comprar agora: ${product.name}, Quantidade: ${quantity}`);
+    //alert(`Comprando ${quantity} unidade(s) de "${product.name}"`);
+
+  if (!isAuthenticated()) {
+    router.push("/login");
+    return;
+  }
+  console.log(`Comprar agora: ${product.name}, Quantidade: ${quantity}`);
+  alert(`Comprando ${quantity} unidade(s) de "${product.name}"`);
+
   };
 
   // ✅ IMPLEMENTAÇÃO CORRETA
   const handleAddToCart = async () => {
-    if (!product) return;
-    
-    setIsAddingToCart(true);
-    
-    try {
-      await addItem(product.id, quantity);
-      
-      // ✅ Feedback de sucesso
-      alert(`✅ ${quantity} unidade(s) de "${product.name}" adicionado(s) ao carrinho!`);
-      
-      // ✅ Opcional: Fechar modal após adicionar
-      // onClose();
-      
-    } catch (error: any) {
-      console.error("Erro ao adicionar ao carrinho:", error);
-      
-      const errorMessage = error.response?.data?.message || 
-                          error.message || 
-                          "Erro ao adicionar ao carrinho";
-      
-      alert(`❌ ${errorMessage}`);
-      
-    } finally {
-      setIsAddingToCart(false);
-    }
+     if (!isAuthenticated()) {
+        router.push("/login");
+        return;
+      }
+
+      if (!product) return;
+      setIsAddingToCart(true);
+      try {
+        await addItem(product.id, quantity);
+        alert(`✅ ${quantity} unidade(s) de "${product.name}" adicionado(s) ao carrinho!`);
+      } catch (error: any) {
+        const errorMessage = error.response?.data?.message || error.message || "Erro ao adicionar ao carrinho";
+        alert(`❌ ${errorMessage}`);
+      } finally {
+        setIsAddingToCart(false);
+      }
   };
 
   return (
