@@ -7,12 +7,15 @@ import ImageLightbox from "./ImageLightbox";
 import { addToCart } from "@/app/services/cart.service"; 
 import { isAuthenticated } from "@/app/services/auth.service";
 
+import { useRouter } from "next/navigation";
+
 interface OrderProductDetailsProps {
   product: Product | null;
   onClose: () => void;
 }
 
 export default function OrderProductDetailsPublic({ product, onClose }: OrderProductDetailsProps) {
+  const router = useRouter();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isImageHovering, setIsImageHovering] = useState(false);
@@ -89,25 +92,23 @@ export default function OrderProductDetailsPublic({ product, onClose }: OrderPro
   };
 
   // ✅ VERSÃO PÚBLICA - Redireciona para login
-  const handleBuyNow = async () => {
-
-    if (!isAuthenticated()) {
-    window.location.href = "/login";
+ const handleBuyNow = async () => {
+  if (!isAuthenticated()) {
+    router.push("/login");
     return;
   }
   await addToCart({ productId: product.id, quantity });
-  window.location.href = "/cart"; // ajusta o path do carrinho
-
-  };
+  router.push("/cart");
+};
 
   // ✅ VERSÃO PÚBLICA - Redireciona para login
   const handleAddToCart = async () => {
-   if (!isAuthenticated()) {
-    window.location.href = "/login";
+  if (!isAuthenticated()) {
+    router.push("/login");
     return;
   }
   await addToCart({ productId: product.id, quantity });
-  };
+ };
 
   return (
     <>
