@@ -2,8 +2,10 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useCart } from "../context/CartContext"; 
 
 export default function NavbarPublic() {
+  const { totalItems, openCart } = useCart();
   const pathname = usePathname();
   const router = useRouter();
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -55,6 +57,26 @@ export default function NavbarPublic() {
             <i className="bi bi-shop me-2"></i>
             Order App
           </Link>
+
+          {/* Botão Carrinho - só aparece se logado */}
+          {isLoggedIn && (
+            <button
+              className="btn btn-light position-relative"
+              style={{ borderRadius: "50%", width: "45px", height: "45px" }}
+              onClick={openCart}
+              title="Abrir Carrinho"
+            >
+              <i className="bi bi-cart3" style={{ fontSize: "1.3rem" }}></i>
+              {totalItems > 0 && (
+                <span 
+                  className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                  style={{ fontSize: "0.65rem" }}
+                >
+                  {totalItems}
+                </span>
+              )}
+            </button>
+          )}
 
           {/* Botões direita */}
           <div className="d-flex align-items-center gap-2">
