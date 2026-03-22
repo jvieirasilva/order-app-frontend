@@ -90,7 +90,7 @@ export default function LoginPage() {
                       <i className="bi bi-shop" style={{ fontSize: "2.5rem" }}></i>
                     </div>
                     <h3 className="fw-bold">Welcome Back</h3>
-                    <p className="text-muted">Sign in to your account</p>
+                    <p className="text-muted">Sign in to your account!</p>
                   </div>
 
                   {/* Error Message */}
